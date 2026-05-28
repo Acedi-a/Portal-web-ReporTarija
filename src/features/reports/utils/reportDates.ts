@@ -1,7 +1,7 @@
 import type { Report } from '../types/report'
 
 const overdueStatuses = new Set(['PENDIENTE', 'EN_REVISION', 'ASIGNADO', 'EN_PROCESO'])
-const overdueDays = 15
+export const REPORT_OVERDUE_DAYS = 15
 
 export function getDaysOpen(report: Report, now = new Date()) {
   const createdAt = new Date(report.created_at)
@@ -10,5 +10,5 @@ export function getDaysOpen(report: Report, now = new Date()) {
 }
 
 export function isReportOverdue(report: Report, now = new Date()) {
-  return overdueStatuses.has(report.status) && getDaysOpen(report, now) >= overdueDays
+  return overdueStatuses.has(report.status) && getDaysOpen(report, now) >= REPORT_OVERDUE_DAYS
 }
