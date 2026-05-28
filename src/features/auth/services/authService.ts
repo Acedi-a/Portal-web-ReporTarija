@@ -16,5 +16,5 @@ export async function logout() {
 export async function getCurrentUser() {
   const { data, error } = await insforge.auth.getCurrentUser()
   assertNoError(error)
-  return data.user
+  return data?.user ?? null
 }

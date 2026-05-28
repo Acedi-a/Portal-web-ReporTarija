@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Bell, ClipboardList, FileText, LayoutDashboard, LogOut, Moon, Sun, Users } from 'lucide-react'
 import { useTheme } from '../../../app/theme'
 import { logout } from '../../../features/auth/services/authService'
+import { clearDemoSession } from '../../../features/auth/services/authSession'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -15,7 +16,7 @@ export function AppLayout() {
   const { theme, toggleTheme } = useTheme()
 
   async function handleLogout() {
-    localStorage.removeItem('reportatarija-demo-session')
+    clearDemoSession()
     await logout().catch(() => undefined)
     navigate('/login')
   }

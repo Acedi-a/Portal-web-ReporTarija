@@ -1,10 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Navigate, Outlet } from 'react-router-dom'
 import { getCurrentUser } from '../services/authService'
-
-function hasDemoSession() {
-  return localStorage.getItem('reportatarija-demo-session') === 'true'
-}
+import { hasDemoSession } from '../services/authSession'
 
 export function AuthGuard() {
   const isDemoSession = hasDemoSession()
