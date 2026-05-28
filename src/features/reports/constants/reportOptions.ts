@@ -22,3 +22,16 @@ export const priorityMarkerClasses: Record<Priority, string> = {
   ALTA: 'bg-orange-600',
   URGENTE: 'bg-red-600',
 }
+
+export const REPORTS_PAGE_SIZE = 5
+
+export const REPORT_MAP_CONFIG = {
+  defaultCenter: [-64.7296, -21.5355] as [number, number],
+  defaultZoom: 12.2,
+  selectedZoom: 14.4,
+  clusterRadius: 52,
+  clusterMaxZoom: 14,
+  clusterColors: ['#2563eb', '#0891b2', '#dc2626'] as [string, string, string],
+  clusterThresholds: [3, 6] as [number, number],
+  pointColor: '#2563eb',
+}

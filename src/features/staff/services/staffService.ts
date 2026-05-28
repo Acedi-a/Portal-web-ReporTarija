@@ -8,7 +8,7 @@ export type StaffPayload = {
   full_name: string
   email: string
   role: StaffRole
-  area_id: number | null
+  area_id: string | null
   is_active: boolean
 }
 

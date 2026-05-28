@@ -1,17 +1,38 @@
+import { z } from 'zod'
 import type { ReportStatus } from '../types/report'
 
-export function validateStatusChange(status: ReportStatus, comment: string) {
+const statusChangeSchema = z.object({
+  status: z.custom<ReportStatus>(),
+  comment: z.string(),
+}).superRefine(({ status, comment }, context) => {
   if (status === 'RECHAZADO' && !comment.trim()) {
-    return 'Para rechazar un reporte debes registrar un comentario.'
+    context.addIssue({
+      code: 'custom',
+      message: 'Para rechazar un reporte debes registrar un comentario.',
+      path: ['comment'],
+    })
   }
+})
 
-  return ''
+const assignmentSchema = z.object({
+  userId: z.string(),
+  areaId: z.string(),
+}).superRefine(({ userId, areaId }, context) => {
+  if (!userId && !areaId) {
+    context.addIssue({
+      code: 'custom',
+      message: 'Selecciona un responsable o un area municipal.',
+      path: ['userId'],
+    })
+  }
+})
+
+export function validateStatusChange(status: ReportStatus, comment: string) {
+  const result = statusChangeSchema.safeParse({ status, comment })
+  return result.success ? '' : result.error.issues[0]?.message ?? 'Revisa los datos del cambio de estado.'
 }
 
 export function validateAssignment(userId: string, areaId: string) {
-  if (!userId && !areaId) {
-    return 'Selecciona un responsable o un area municipal.'
-  }
-
-  return ''
+  const result = assignmentSchema.safeParse({ userId, areaId })
+  return result.success ? '' : result.error.issues[0]?.message ?? 'Revisa los datos de asignación.'
 }

@@ -9,13 +9,13 @@ export type ReportStatus =
 export type Priority = 'BAJA' | 'MEDIA' | 'ALTA' | 'URGENTE'
 
 export type Area = {
-  id: number
+  id: string
   name: string
   code: string
 }
 
 export type Category = {
-  id: number
+  id: string
   name: string
   code: string
 }
@@ -25,7 +25,7 @@ export type StaffUser = {
   full_name: string
   email: string
   role: 'CITIZEN' | 'ADMIN' | 'FUNCIONARIO' | 'TECNICO' | 'RESPONSABLE_AREA'
-  area_id: number | null
+  area_id: string | null
   is_active: boolean
   areas?: Area | null
 }
@@ -50,7 +50,7 @@ export type Report = {
 }
 
 export type Evidence = {
-  id: number
+  id: string
   report_id: string
   file_url: string
   file_name: string | null
@@ -58,7 +58,7 @@ export type Evidence = {
 }
 
 export type TrackingEntry = {
-  id: number
+  id: string
   report_id: string
   previous_status: ReportStatus | null
   new_status: ReportStatus

@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { StatusBadge } from '../../../shared/components/ui/StatusBadge'
 import { formatDate } from '../../../shared/utils/format'
 import { PriorityBadge } from './PriorityBadge'
 import { isReportOverdue } from '../utils/reportDates'
 import type { Evidence, Report } from '../types/report'
+import { REPORTS_PAGE_SIZE } from '../constants/reportOptions'
+import { usePagination } from '../hooks/usePagination'
 
 type ReportListProps = {
   reports: Report[]
@@ -15,8 +16,6 @@ type ReportListProps = {
   onSelectReport: (report: Report) => void
 }
 
-const pageSize = 5
-
 export function ReportList({
   reports,
   isLoading,
@@ -25,13 +24,7 @@ export function ReportList({
   selectedReportId,
   onSelectReport,
 }: ReportListProps) {
-  const [page, setPage] = useState(1)
-  const totalPages = Math.max(1, Math.ceil(reports.length / pageSize))
-  const currentPage = Math.min(page, totalPages)
-  const paginatedReports = useMemo(() => {
-    const start = (currentPage - 1) * pageSize
-    return reports.slice(start, start + pageSize)
-  }, [currentPage, reports])
+  const { currentPage, totalPages, paginatedItems, setPage } = usePagination(reports, REPORTS_PAGE_SIZE)
 
   return (
     <>
@@ -48,7 +41,7 @@ export function ReportList({
         ) : reports.length === 0 ? (
           <div className="rounded-lg border border-slate-200 p-4 text-sm text-slate-500 dark:border-zinc-800 dark:text-zinc-400">No hay reportes con esos filtros.</div>
         ) : (
-          paginatedReports.map((report) => (
+          paginatedItems.map((report) => (
             <ReportListCard
               key={report.id}
               report={report}
@@ -59,7 +52,7 @@ export function ReportList({
           ))
         )}
       </div>
-      {reports.length > pageSize ? (
+      {reports.length > REPORTS_PAGE_SIZE ? (
         <ReportPagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
       ) : null}
     </>

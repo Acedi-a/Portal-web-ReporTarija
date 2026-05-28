@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { Map, MapClusterLayer, MapControls, MapMarker, MapPopup, MarkerContent, MarkerPopup, MarkerTooltip } from '../../../components/ui/map'
 import type { ClusterPointProperties } from '../hooks/useReportMapData'
 import type { Evidence, Report } from '../types/report'
-import { priorityMarkerClasses } from '../constants/reportOptions'
+import { REPORT_MAP_CONFIG, priorityMarkerClasses } from '../constants/reportOptions'
 import { ClusterPopup, ReportMapPopup } from './ReportMapPopup'
 
 export type MapMode = 'markers' | 'clusters'
@@ -15,8 +15,6 @@ type ReportMapProps = {
   selectedReport?: Report | null
   onSelectReport?: (report: Report) => void
 }
-
-const tarijaCenter: [number, number] = [-64.7296, -21.5355]
 
 export function ReportMap({ mappedReports, geoJsonData, evidenceByReport, selectedReport, onSelectReport }: ReportMapProps) {
   const [mapMode, setMapMode] = useState<MapMode>('markers')
@@ -32,8 +30,8 @@ export function ReportMap({ mappedReports, geoJsonData, evidenceByReport, select
 
     return [Number(selectedReport.longitude), Number(selectedReport.latitude)] as [number, number]
   }, [selectedReport])
-  const mapCenter = selectedCoordinates ?? tarijaCenter
-  const mapZoom = selectedCoordinates ? 14.4 : 12.2
+  const mapCenter = selectedCoordinates ?? REPORT_MAP_CONFIG.defaultCenter
+  const mapZoom = selectedCoordinates ? REPORT_MAP_CONFIG.selectedZoom : REPORT_MAP_CONFIG.defaultZoom
 
   return (
     <div className="relative min-h-[560px] bg-slate-200 dark:bg-zinc-950">
@@ -76,11 +74,11 @@ export function ReportMap({ mappedReports, geoJsonData, evidenceByReport, select
         ) : (
           <MapClusterLayer<ClusterPointProperties>
             data={geoJsonData}
-            clusterRadius={52}
-            clusterMaxZoom={14}
-            clusterColors={['#2563eb', '#0891b2', '#dc2626']}
-            clusterThresholds={[3, 6]}
-            pointColor="#2563eb"
+            clusterRadius={REPORT_MAP_CONFIG.clusterRadius}
+            clusterMaxZoom={REPORT_MAP_CONFIG.clusterMaxZoom}
+            clusterColors={REPORT_MAP_CONFIG.clusterColors}
+            clusterThresholds={REPORT_MAP_CONFIG.clusterThresholds}
+            pointColor={REPORT_MAP_CONFIG.pointColor}
             onPointClick={(feature, coordinates) => {
               setSelectedPoint({
                 coordinates,

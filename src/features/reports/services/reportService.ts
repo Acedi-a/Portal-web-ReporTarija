@@ -4,7 +4,7 @@ import { createReportAssignedNotification, createReportUpdatedNotification } fro
 import { createTrackingEntry } from '../../tracking/services/trackingService'
 import type { Report, ReportStatus } from '../types/report'
 
-type ReportFilters = {
+export type ReportFilters = {
   search?: string
   status?: string
   category?: string
@@ -18,51 +18,26 @@ type ReportFilters = {
 const reportSelect =
   '*, categories(id,name,code), areas:assigned_area_id(id,name,code), assigned_user:assigned_to(id,full_name,email,role,is_active), citizen:citizen_id(id,full_name,email,role,is_active)'
 
+const reportFilterColumns: Array<[keyof ReportFilters, string]> = [
+  ['status', 'status'],
+  ['category', 'category_id'],
+  ['priority', 'priority'],
+  ['area', 'assigned_area_id'],
+  ['responsible', 'assigned_to'],
+]
+
 export async function getReports(filters: ReportFilters = {}) {
   let query = insforge.database
     .from('reports')
     .select(reportSelect)
     .order('created_at', { ascending: false })
 
-  if (filters.status) {
-    query = query.eq('status', filters.status)
-  }
-
-  if (filters.category) {
-    query = query.eq('category_id', filters.category)
-  }
-
-  if (filters.priority) {
-    query = query.eq('priority', filters.priority)
-  }
-
-  if (filters.area) {
-    query = query.eq('assigned_area_id', filters.area)
-  }
-
-  if (filters.responsible) {
-    query = query.eq('assigned_to', filters.responsible)
-  }
-
-  if (filters.fromDate) {
-    query = query.gte('created_at', filters.fromDate)
-  }
-
-  if (filters.toDate) {
-    query = query.lte('created_at', `${filters.toDate}T23:59:59`)
-  }
+  query = applyReportFilters(query, filters)
 
   const { data, error } = await query
   assertNoError(error)
 
-  const reports = (data ?? []) as Report[]
-  const search = filters.search?.trim().toLowerCase()
-
-  if (!search) {
-    return reports
-  }
-
-  return reports.filter((report) => reportMatchesSearch(report, search))
+  return filterReportsBySearch((data ?? []) as Report[], filters.search)
 }
 
 export async function getReportById(id: string) {
@@ -132,4 +107,35 @@ function reportMatchesSearch(report: Report, search: string) {
   return [report.title, report.description, report.address, report.neighborhood, report.categories?.name]
     .filter(Boolean)
     .some((value) => String(value).toLowerCase().includes(search))
+}
+
+function applyReportFilters<Query>(query: Query, filters: ReportFilters) {
+  let filteredQuery = query as Query & {
+    eq: (column: string, value: string) => typeof filteredQuery
+    gte: (column: string, value: string) => typeof filteredQuery
+    lte: (column: string, value: string) => typeof filteredQuery
+  }
+
+  reportFilterColumns.forEach(([filterKey, column]) => {
+    const value = filters[filterKey]
+
+    if (value) {
+      filteredQuery = filteredQuery.eq(column, value)
+    }
+  })
+
+  if (filters.fromDate) {
+    filteredQuery = filteredQuery.gte('created_at', filters.fromDate)
+  }
+
+  if (filters.toDate) {
+    filteredQuery = filteredQuery.lte('created_at', `${filters.toDate}T23:59:59`)
+  }
+
+  return filteredQuery
+}
+
+function filterReportsBySearch(reports: Report[], searchValue?: string) {
+  const search = searchValue?.trim().toLowerCase()
+  return search ? reports.filter((report) => reportMatchesSearch(report, search)) : reports
 }

@@ -11,38 +11,36 @@ export type ReportFiltersState = {
   toDate: string
 }
 
+const initialFilters: ReportFiltersState = {
+  search: '',
+  status: '',
+  category: '',
+  priority: '',
+  area: '',
+  responsible: '',
+  fromDate: '',
+  toDate: '',
+}
+
 export function useReportFilters() {
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('')
-  const [category, setCategory] = useState('')
-  const [priority, setPriority] = useState('')
-  const [area, setArea] = useState('')
-  const [responsible, setResponsible] = useState('')
-  const [fromDate, setFromDate] = useState('')
-  const [toDate, setToDate] = useState('')
+  const [filterValues, setFilterValues] = useState<ReportFiltersState>(initialFilters)
 
   const filters = useMemo(
-    () => ({ search, status, category, priority, area, responsible, fromDate, toDate }),
-    [search, status, category, priority, area, responsible, fromDate, toDate],
+    () => filterValues,
+    [filterValues],
   )
+
+  function setFilter<Key extends keyof ReportFiltersState>(field: Key, value: ReportFiltersState[Key]) {
+    setFilterValues((currentFilters) => ({ ...currentFilters, [field]: value }))
+  }
+
+  function resetFilters() {
+    setFilterValues(initialFilters)
+  }
 
   return {
     filters,
-    search,
-    setSearch,
-    status,
-    setStatus,
-    category,
-    setCategory,
-    priority,
-    setPriority,
-    area,
-    setArea,
-    responsible,
-    setResponsible,
-    fromDate,
-    setFromDate,
-    toDate,
-    setToDate,
+    setFilter,
+    resetFilters,
   }
 }

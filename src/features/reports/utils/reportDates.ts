@@ -1,7 +1,7 @@
 import type { Report } from '../types/report'
 
 const overdueStatuses = new Set(['PENDIENTE', 'EN_REVISION', 'ASIGNADO', 'EN_PROCESO'])
-const overdueDays = 3
+const overdueDays = 15
 
 export function getDaysOpen(report: Report, now = new Date()) {
   const createdAt = new Date(report.created_at)

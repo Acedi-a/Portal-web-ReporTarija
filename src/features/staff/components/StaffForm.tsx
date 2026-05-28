@@ -58,7 +58,7 @@ export function StaffForm({
         <SelectInput
           label="Área"
           value={value.area_id ?? ''}
-          onChange={(event) => onChange({ ...value, area_id: event.target.value ? Number(event.target.value) : null })}
+          onChange={(event) => onChange({ ...value, area_id: event.target.value || null })}
         >
             <option value="">Todas / sin área</option>
             {areas.map((area) => <option key={area.id} value={area.id}>{area.name}</option>)}

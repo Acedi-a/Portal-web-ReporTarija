@@ -1,15 +1,7 @@
-import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { assignResponsible, getReportById, updateReportStatus } from '../services/reportService'
-import { getEvidencesByReportId, uploadEvidence } from '../services/evidenceService'
-import { getAreas, getStaff } from '../../staff/services/staffService'
-import { getTrackingByReportId } from '../../tracking/services/trackingService'
-import type { ReportStatus } from '../types/report'
 import { StatusBadge } from '../../../shared/components/ui/StatusBadge'
 import { formatDate } from '../../../shared/utils/format'
-import { validateAssignment, validateStatusChange } from '../utils/reportActions'
 import { ReportInfoCard } from '../components/ReportInfoCard'
 import { StatusSelector } from '../components/StatusSelector'
 import { ResponsibleSelector } from '../components/ResponsibleSelector'
@@ -17,66 +9,12 @@ import { EvidenceViewer } from '../components/EvidenceViewer'
 import { ReportProgress } from '../components/ReportProgress'
 import { TrackingTimeline } from '../../tracking/components/TrackingTimeline'
 import { Panel } from '../../../shared/components/ui/Panel'
+import { useReportDetail } from '../hooks/useReportDetail'
 
 export function ReportDetailPage() {
   const { id = '' } = useParams()
-  const queryClient = useQueryClient()
-  const [newStatus, setNewStatus] = useState<ReportStatus>('EN_REVISION')
-  const [comment, setComment] = useState('')
-  const [userId, setUserId] = useState('')
-  const [areaId, setAreaId] = useState('')
-  const [statusError, setStatusError] = useState('')
-  const [assignmentError, setAssignmentError] = useState('')
-  const { data: report, isLoading } = useQuery({ queryKey: ['report', id], queryFn: () => getReportById(id), enabled: Boolean(id) })
-  const { data: evidences = [] } = useQuery({ queryKey: ['evidences', id], queryFn: () => getEvidencesByReportId(id), enabled: Boolean(id) })
-  const { data: tracking = [] } = useQuery({ queryKey: ['tracking', id], queryFn: () => getTrackingByReportId(id), enabled: Boolean(id) })
-  const { data: staff = [] } = useQuery({ queryKey: ['staff'], queryFn: getStaff })
-  const { data: areas = [] } = useQuery({ queryKey: ['areas'], queryFn: getAreas })
-
-  const refresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: ['report', id] })
-    await queryClient.invalidateQueries({ queryKey: ['tracking', id] })
-    await queryClient.invalidateQueries({ queryKey: ['reports'] })
-    await queryClient.invalidateQueries({ queryKey: ['notifications'] })
-  }
-
-  const statusMutation = useMutation({
-    mutationFn: async () => {
-      if (!report) return
-      await updateReportStatus(report, newStatus, comment)
-    },
-    onSuccess: refresh,
-  })
-
-  const assignmentMutation = useMutation({
-    mutationFn: async () => {
-      if (!report) return
-      await assignResponsible(report, userId, areaId)
-    },
-    onSuccess: refresh,
-  })
-  const evidenceMutation = useMutation({
-    mutationFn: (file: File) => uploadEvidence(id, file),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['evidences', id] }),
-  })
-
-  function handleStatusSubmit() {
-    const error = validateStatusChange(newStatus, comment)
-    setStatusError(error)
-
-    if (!error) {
-      statusMutation.mutate()
-    }
-  }
-
-  function handleAssignmentSubmit() {
-    const error = validateAssignment(userId, areaId)
-    setAssignmentError(error)
-
-    if (!error) {
-      assignmentMutation.mutate()
-    }
-  }
+  const reportDetail = useReportDetail(id)
+  const { report, isLoading, statusForm, assignmentForm, evidenceUpload } = reportDetail
 
   if (isLoading) {
     return <div className="text-sm text-slate-500 dark:text-zinc-400">Cargando reporte...</div>
@@ -109,37 +47,25 @@ export function ReportDetailPage() {
         <Panel className="space-y-4">
           <h2 className="font-semibold text-slate-950 dark:text-zinc-50">Acciones</h2>
           <StatusSelector
-            value={newStatus}
-            comment={comment}
-            error={statusError}
-            isSubmitting={statusMutation.isPending}
-            onStatusChange={(status) => {
-              setNewStatus(status)
-              setStatusError('')
-            }}
-            onCommentChange={(value) => {
-              setComment(value)
-              setStatusError('')
-            }}
-            onSubmit={handleStatusSubmit}
+            value={statusForm.newStatus}
+            comment={statusForm.comment}
+            error={statusForm.error}
+            isSubmitting={statusForm.isSubmitting}
+            onStatusChange={statusForm.changeStatus}
+            onCommentChange={statusForm.changeComment}
+            onSubmit={statusForm.submit}
           />
           <div className="border-t border-slate-100 pt-4 dark:border-zinc-800">
-            {assignmentError ? <p className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{assignmentError}</p> : null}
+            {assignmentForm.error ? <p className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{assignmentForm.error}</p> : null}
             <ResponsibleSelector
-              areaId={areaId}
-              userId={userId}
-              areas={areas}
-              staff={staff}
-              isSubmitting={assignmentMutation.isPending}
-              onAreaChange={(value) => {
-                setAreaId(value)
-                setAssignmentError('')
-              }}
-              onUserChange={(value) => {
-                setUserId(value)
-                setAssignmentError('')
-              }}
-              onSubmit={handleAssignmentSubmit}
+              areaId={assignmentForm.areaId}
+              userId={assignmentForm.userId}
+              areas={reportDetail.areas}
+              staff={reportDetail.staff}
+              isSubmitting={assignmentForm.isSubmitting}
+              onAreaChange={assignmentForm.changeArea}
+              onUserChange={assignmentForm.changeResponsible}
+              onSubmit={assignmentForm.submit}
             />
           </div>
         </Panel>
@@ -147,11 +73,11 @@ export function ReportDetailPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <EvidenceViewer
-          evidences={evidences}
-          isUploading={evidenceMutation.isPending}
-          onUpload={(file) => evidenceMutation.mutate(file)}
+          evidences={reportDetail.evidences}
+          isUploading={evidenceUpload.isUploading}
+          onUpload={evidenceUpload.upload}
         />
-        <TrackingTimeline tracking={tracking} />
+        <TrackingTimeline tracking={reportDetail.tracking} />
       </div>
     </div>
   )

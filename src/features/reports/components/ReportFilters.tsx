@@ -2,65 +2,22 @@ import { ListFilter, Search } from 'lucide-react'
 import { SelectInput, TextInput } from '../../../shared/components/ui/FormControls'
 import { statusLabels } from '../../../shared/utils/format'
 import { priorityOptions } from '../constants/reportOptions'
+import type { Area, Category, StaffUser } from '../types/report'
+import type { ReportFiltersState } from '../hooks/useReportFilters'
 
-type CategoryOption = {
-  id: number
-  name: string
-}
-
-type AreaOption = {
-  id: number
-  name: string
-}
-
-type ResponsibleOption = {
-  id: string
-  full_name: string
+type FilterOptions = {
+  categories: Category[]
+  areas: Area[]
+  staff: StaffUser[]
 }
 
 type ReportFiltersProps = {
-  search: string
-  onSearchChange: (value: string) => void
-  status: string
-  onStatusChange: (value: string) => void
-  category: string
-  onCategoryChange: (value: string) => void
-  priority: string
-  onPriorityChange: (value: string) => void
-  area: string
-  onAreaChange: (value: string) => void
-  responsible: string
-  onResponsibleChange: (value: string) => void
-  fromDate: string
-  onFromDateChange: (value: string) => void
-  toDate: string
-  onToDateChange: (value: string) => void
-  categories: CategoryOption[]
-  areas: AreaOption[]
-  staff: ResponsibleOption[]
+  filters: ReportFiltersState
+  options: FilterOptions
+  onFilterChange: <Key extends keyof ReportFiltersState>(field: Key, value: ReportFiltersState[Key]) => void
 }
 
-export function ReportFilters({
-  search,
-  onSearchChange,
-  status,
-  onStatusChange,
-  category,
-  onCategoryChange,
-  priority,
-  onPriorityChange,
-  area,
-  onAreaChange,
-  responsible,
-  onResponsibleChange,
-  fromDate,
-  onFromDateChange,
-  toDate,
-  onToDateChange,
-  categories,
-  areas,
-  staff,
-}: ReportFiltersProps) {
+export function ReportFilters({ filters, options, onFilterChange }: ReportFiltersProps) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-zinc-100">
@@ -71,44 +28,44 @@ export function ReportFilters({
         <label className="relative lg:col-span-2 xl:col-span-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
-            value={search}
-            onChange={(event) => onSearchChange(event.target.value)}
+            value={filters.search}
+            onChange={(event) => onFilterChange('search', event.target.value)}
             placeholder="Buscar por título, zona o descripción"
             className="h-10 w-full rounded-md border border-slate-200 bg-white pl-9 pr-3 text-sm outline-none focus:border-blue-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100"
           />
         </label>
-        <SelectInput value={status} onChange={(event) => onStatusChange(event.target.value)}>
+        <SelectInput value={filters.status} onChange={(event) => onFilterChange('status', event.target.value)}>
           <option value="">Estados</option>
           {Object.entries(statusLabels).map(([value, label]) => (
             <option key={value} value={value}>{label}</option>
           ))}
         </SelectInput>
-        <SelectInput value={category} onChange={(event) => onCategoryChange(event.target.value)}>
+        <SelectInput value={filters.category} onChange={(event) => onFilterChange('category', event.target.value)}>
           <option value="">Categorías</option>
-          {categories.map((item) => (
+          {options.categories.map((item) => (
             <option key={item.id} value={item.id}>{item.name}</option>
           ))}
         </SelectInput>
-        <SelectInput value={priority} onChange={(event) => onPriorityChange(event.target.value)}>
+        <SelectInput value={filters.priority} onChange={(event) => onFilterChange('priority', event.target.value)}>
           <option value="">Prioridad</option>
           {priorityOptions.map((item) => (
             <option key={item.value} value={item.value}>{item.label}</option>
           ))}
         </SelectInput>
-        <SelectInput value={area} onChange={(event) => onAreaChange(event.target.value)}>
+        <SelectInput value={filters.area} onChange={(event) => onFilterChange('area', event.target.value)}>
           <option value="">Área</option>
-          {areas.map((item) => (
+          {options.areas.map((item) => (
             <option key={item.id} value={item.id}>{item.name}</option>
           ))}
         </SelectInput>
-        <SelectInput value={responsible} onChange={(event) => onResponsibleChange(event.target.value)}>
+        <SelectInput value={filters.responsible} onChange={(event) => onFilterChange('responsible', event.target.value)}>
           <option value="">Responsable</option>
-          {staff.map((item) => (
+          {options.staff.map((item) => (
             <option key={item.id} value={item.id}>{item.full_name}</option>
           ))}
         </SelectInput>
-        <TextInput type="date" value={fromDate} onChange={(event) => onFromDateChange(event.target.value)} className="mt-0" />
-        <TextInput type="date" value={toDate} onChange={(event) => onToDateChange(event.target.value)} className="mt-0" />
+        <TextInput type="date" value={filters.fromDate} onChange={(event) => onFilterChange('fromDate', event.target.value)} className="mt-0" />
+        <TextInput type="date" value={filters.toDate} onChange={(event) => onFilterChange('toDate', event.target.value)} className="mt-0" />
       </div>
     </div>
   )
