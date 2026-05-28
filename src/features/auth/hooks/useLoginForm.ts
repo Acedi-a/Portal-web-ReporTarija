@@ -39,6 +39,7 @@ export function useLoginForm() {
   }
 
   function enterDemo() {
+    localStorage.setItem('reportatarija-demo-session', 'true')
     navigate('/dashboard')
   }
 

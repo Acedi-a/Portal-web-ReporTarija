@@ -1,5 +1,6 @@
 import { insforge } from '../../../lib/insforge'
 import { assertNoError } from '../../../lib/insforgeErrors'
+import { statusLabels } from '../../../shared/utils/format'
 import type { ReportStatus } from '../../reports/types/report'
 
 export async function getNotifications() {
@@ -21,8 +22,22 @@ export async function createReportUpdatedNotification(input: {
   const { error } = await insforge.database.from('notifications').insert({
     report_id: input.reportId,
     title: 'Reporte actualizado',
-    message: `El reporte "${input.reportTitle}" cambió a ${input.newStatus}.`,
+    message: `El reporte "${input.reportTitle}" cambió a ${statusLabels[input.newStatus]}.`,
     type: input.newStatus === 'RESUELTO' ? 'SUCCESS' : 'INFO',
+  })
+
+  assertNoError(error)
+}
+
+export async function createReportAssignedNotification(input: {
+  reportId: string
+  reportTitle: string
+}) {
+  const { error } = await insforge.database.from('notifications').insert({
+    report_id: input.reportId,
+    title: 'Reporte asignado',
+    message: `El reporte "${input.reportTitle}" fue asignado para atención municipal.`,
+    type: 'INFO',
   })
 
   assertNoError(error)

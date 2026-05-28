@@ -1,8 +1,9 @@
 import { Layers3, MapPin } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Map, MapClusterLayer, MapControls, MapMarker, MapPopup, MarkerContent, MarkerPopup, MarkerTooltip } from '../../../components/ui/map'
 import type { ClusterPointProperties } from '../hooks/useReportMapData'
 import type { Evidence, Report } from '../types/report'
+import { priorityMarkerClasses } from '../constants/reportOptions'
 import { ClusterPopup, ReportMapPopup } from './ReportMapPopup'
 
 export type MapMode = 'markers' | 'clusters'
@@ -11,14 +12,28 @@ type ReportMapProps = {
   mappedReports: Report[]
   geoJsonData: GeoJSON.FeatureCollection<GeoJSON.Point, ClusterPointProperties>
   evidenceByReport: Record<string, Evidence>
+  selectedReport?: Report | null
+  onSelectReport?: (report: Report) => void
 }
 
-export function ReportMap({ mappedReports, geoJsonData, evidenceByReport }: ReportMapProps) {
+const tarijaCenter: [number, number] = [-64.7296, -21.5355]
+
+export function ReportMap({ mappedReports, geoJsonData, evidenceByReport, selectedReport, onSelectReport }: ReportMapProps) {
   const [mapMode, setMapMode] = useState<MapMode>('markers')
   const [selectedPoint, setSelectedPoint] = useState<{
     coordinates: [number, number]
     properties: ClusterPointProperties
   } | null>(null)
+
+  const selectedCoordinates = useMemo(() => {
+    if (!selectedReport?.latitude || !selectedReport.longitude) {
+      return null
+    }
+
+    return [Number(selectedReport.longitude), Number(selectedReport.latitude)] as [number, number]
+  }, [selectedReport])
+  const mapCenter = selectedCoordinates ?? tarijaCenter
+  const mapZoom = selectedCoordinates ? 14.4 : 12.2
 
   return (
     <div className="relative min-h-[560px] bg-slate-200 dark:bg-zinc-950">
@@ -27,14 +42,29 @@ export function ReportMap({ mappedReports, geoJsonData, evidenceByReport }: Repo
         <MapModeButton active={mapMode === 'clusters'} onClick={() => setMapMode('clusters')} icon="cluster" label="Clusters" />
       </div>
 
-      <Map center={[-64.729, -21.535]} zoom={12.2} className="h-full min-h-[560px] w-full" fadeDuration={0}>
+      <Map
+        key={selectedReport?.id ?? 'tarija'}
+        center={mapCenter}
+        zoom={mapZoom}
+        className="h-full min-h-[560px] w-full"
+        fadeDuration={0}
+      >
         {mapMode === 'markers' ? (
           mappedReports.map((report) => (
-            <MapMarker key={report.id} longitude={Number(report.longitude)} latitude={Number(report.latitude)}>
+            <MapMarker
+              key={report.id}
+              longitude={Number(report.longitude)}
+              latitude={Number(report.latitude)}
+              onClick={() => onSelectReport?.(report)}
+            >
               <MarkerContent>
-                <div className="group relative grid size-9 place-items-center rounded-full border-2 border-white bg-blue-700 text-white shadow-lg transition-transform hover:scale-110 dark:border-zinc-950 dark:bg-zinc-100 dark:text-zinc-950">
+                <div
+                  className={`group relative grid size-9 place-items-center rounded-full border-2 border-white text-white shadow-lg transition-transform hover:scale-110 dark:border-zinc-950 ${priorityMarkerClasses[report.priority]} ${
+                    selectedReport?.id === report.id ? 'ring-4 ring-blue-200' : ''
+                  }`}
+                >
                   <MapPin className="h-4 w-4 fill-current" />
-                  <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-400 ring-2 ring-white dark:ring-slate-950" />
+                  <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-white ring-2 ring-slate-300 dark:ring-slate-950" />
                 </div>
               </MarkerContent>
               <MarkerTooltip>{report.title}</MarkerTooltip>
