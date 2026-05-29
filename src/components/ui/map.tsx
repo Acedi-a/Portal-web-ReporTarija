@@ -156,6 +156,22 @@ function DefaultLoader() {
   );
 }
 
+function WebGlUnavailableState({ message }: { message: string }) {
+  return (
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-50 p-6 text-center dark:bg-zinc-950">
+      <div className="max-w-sm">
+        <p className="text-sm font-semibold text-slate-950 dark:text-zinc-50">
+          No se pudo cargar el mapa
+        </p>
+        <p className="mt-2 text-sm text-slate-500 dark:text-zinc-400">
+          Tu navegador o equipo no tiene WebGL disponible. Puedes seguir usando la lista de reportes y revisar los detalles.
+        </p>
+        <p className="mt-3 text-xs text-slate-400 dark:text-zinc-500">{message}</p>
+      </div>
+    </div>
+  );
+}
+
 function getViewport(map: MapLibreGL.Map): MapViewport {
   const center = map.getCenter();
   return {
@@ -184,6 +200,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
   const [mapInstance, setMapInstance] = useState<MapLibreGL.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isStyleLoaded, setIsStyleLoaded] = useState(false);
+  const [mapError, setMapError] = useState("");
   const currentStyleRef = useRef<MapStyleOption | null>(null);
   const styleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const internalUpdateRef = useRef(false);
@@ -220,16 +237,26 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       resolvedTheme === "dark" ? mapStyles.dark : mapStyles.light;
     currentStyleRef.current = initialStyle;
 
-    const map = new MapLibreGL.Map({
-      container: containerRef.current,
-      style: initialStyle,
-      renderWorldCopies: false,
-      attributionControl: {
-        compact: true,
-      },
-      ...props,
-      ...viewport,
-    });
+    let map: MapLibreGL.Map;
+
+    try {
+      map = new MapLibreGL.Map({
+        container: containerRef.current,
+        style: initialStyle,
+        renderWorldCopies: false,
+        attributionControl: {
+          compact: true,
+        },
+        ...props,
+        ...viewport,
+      });
+    } catch (error) {
+      setMapError(error instanceof Error ? error.message : "WebGL no esta disponible.");
+      setIsLoaded(false);
+      setIsStyleLoaded(false);
+      setMapInstance(null);
+      return;
+    }
 
     const styleDataHandler = () => {
       clearStyleTimeout();
@@ -327,9 +354,10 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
         ref={containerRef}
         className={cn("relative h-full w-full", className)}
       >
-        {(!isLoaded || loading) && <DefaultLoader />}
+        {mapError ? <WebGlUnavailableState message={mapError} /> : null}
+        {!mapError && (!isLoaded || loading) && <DefaultLoader />}
         {/* SSR-safe: children render only when map is loaded on client */}
-        {mapInstance && children}
+        {mapInstance && !mapError && children}
       </div>
     </MapContext.Provider>
   );

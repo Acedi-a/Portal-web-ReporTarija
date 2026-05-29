@@ -1,9 +1,10 @@
 import { insforge } from '../../../lib/insforge'
 import { assertNoError } from '../../../lib/insforgeErrors'
-import type { LoginFormValues } from '../validations/loginSchema'
+import { loginDtoSchema, type LoginDto } from '../dtos/loginDto'
 
-export async function login(credentials: LoginFormValues) {
-  const { data, error } = await insforge.auth.signInWithPassword(credentials)
+export async function login(credentials: LoginDto) {
+  const parsed = loginDtoSchema.parse(credentials)
+  const { data, error } = await insforge.auth.signInWithPassword(parsed)
   assertNoError(error)
   return data
 }

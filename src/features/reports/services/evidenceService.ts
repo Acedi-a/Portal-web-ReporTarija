@@ -1,5 +1,6 @@
 import { insforge } from '../../../lib/insforge'
 import { assertNoError } from '../../../lib/insforgeErrors'
+import { uploadEvidenceDtoSchema, type UploadEvidenceDto } from '../dtos/reportActionDtos'
 import type { Evidence } from '../types/report'
 
 export async function getEvidencesByReportId(reportId: string) {
@@ -14,7 +15,8 @@ export async function getAllEvidences() {
   return (data ?? []) as Evidence[]
 }
 
-export async function uploadEvidence(reportId: string, file: File) {
+export async function uploadEvidence(input: UploadEvidenceDto) {
+  const { reportId, file } = uploadEvidenceDtoSchema.parse(input)
   const objectPath = `reports/${reportId}/${Date.now()}-${file.name}`
   const { data: uploaded, error: uploadError } = await insforge.storage
     .from('evidences')

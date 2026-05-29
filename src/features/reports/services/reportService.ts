@@ -2,18 +2,16 @@ import { insforge } from '../../../lib/insforge'
 import { assertNoError } from '../../../lib/insforgeErrors'
 import { createReportAssignedNotification, createReportUpdatedNotification } from '../../notifications/services/notificationService'
 import { createTrackingEntry } from '../tracking/services/trackingService'
-import type { Report, ReportStatus } from '../types/report'
+import {
+  assignResponsibleDtoSchema,
+  updateReportStatusDtoSchema,
+  type AssignResponsibleDto,
+  type ReportFiltersDto,
+  type UpdateReportStatusDto,
+} from '../dtos/reportActionDtos'
+import type { Report } from '../types/report'
 
-export type ReportFilters = {
-  search?: string
-  status?: string
-  category?: string
-  priority?: string
-  area?: string
-  responsible?: string
-  fromDate?: string
-  toDate?: string
-}
+export type ReportFilters = ReportFiltersDto
 
 const reportSelect =
   '*, categories(id,name,code), areas:assigned_area_id(id,name,code), assigned_user:assigned_to(id,full_name,email,role,is_active), citizen:citizen_id(id,full_name,email,role,is_active)'
@@ -51,55 +49,57 @@ export async function getReportById(id: string) {
   return data as Report | null
 }
 
-export async function updateReportStatus(report: Report, newStatus: ReportStatus, comment: string) {
+export async function updateReportStatus(input: UpdateReportStatusDto) {
+  const parsed = updateReportStatusDtoSchema.parse(input)
   const { error: updateError } = await insforge.database
     .from('reports')
     .update({
-      status: newStatus,
+      status: parsed.newStatus,
       updated_at: new Date().toISOString(),
-      resolved_at: newStatus === 'RESUELTO' ? new Date().toISOString() : report.resolved_at,
+      resolved_at: parsed.newStatus === 'RESUELTO' ? new Date().toISOString() : parsed.resolvedAt,
     })
-    .eq('id', report.id)
+    .eq('id', parsed.reportId)
 
   assertNoError(updateError)
 
   await createTrackingEntry({
-    reportId: report.id,
-    previousStatus: report.status,
-    newStatus,
-    comment,
+    reportId: parsed.reportId,
+    previousStatus: parsed.previousStatus,
+    newStatus: parsed.newStatus,
+    comment: parsed.comment,
   })
 
   await createReportUpdatedNotification({
-    reportId: report.id,
-    reportTitle: report.title,
-    newStatus,
+    reportId: parsed.reportId,
+    reportTitle: parsed.reportTitle,
+    newStatus: parsed.newStatus,
   })
 }
 
-export async function assignResponsible(report: Report, userId: string, areaId: string) {
+export async function assignResponsible(input: AssignResponsibleDto) {
+  const parsed = assignResponsibleDtoSchema.parse(input)
   const { error } = await insforge.database
     .from('reports')
     .update({
-      assigned_to: userId || null,
-      assigned_area_id: areaId || null,
+      assigned_to: parsed.userId || null,
+      assigned_area_id: parsed.areaId || null,
       status: 'ASIGNADO',
       updated_at: new Date().toISOString(),
     })
-    .eq('id', report.id)
+    .eq('id', parsed.reportId)
 
   assertNoError(error)
 
   await createTrackingEntry({
-    reportId: report.id,
-    previousStatus: report.status,
+    reportId: parsed.reportId,
+    previousStatus: parsed.previousStatus,
     newStatus: 'ASIGNADO',
     comment: 'Reporte asignado desde el portal municipal.',
   })
 
   await createReportAssignedNotification({
-    reportId: report.id,
-    reportTitle: report.title,
+    reportId: parsed.reportId,
+    reportTitle: parsed.reportTitle,
   })
 }
 

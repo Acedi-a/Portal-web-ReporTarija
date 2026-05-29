@@ -17,10 +17,3 @@ export type PortalNotification = {
     status: ReportStatus
   } | null
 }
-
-export type CreateNotificationPayload = {
-  report_id?: string
-  title: string
-  message: string
-  type?: NotificationType
-}

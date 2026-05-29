@@ -46,7 +46,14 @@ export function useReportDetail(reportId: string) {
   const statusMutation = useMutation({
     mutationFn: async () => {
       if (!reportQuery.data) return
-      await updateReportStatus(reportQuery.data, newStatus, comment)
+      await updateReportStatus({
+        reportId: reportQuery.data.id,
+        reportTitle: reportQuery.data.title,
+        previousStatus: reportQuery.data.status,
+        newStatus,
+        comment,
+        resolvedAt: reportQuery.data.resolved_at,
+      })
     },
     onSuccess: refreshReportDetail,
   })
@@ -54,13 +61,19 @@ export function useReportDetail(reportId: string) {
   const assignmentMutation = useMutation({
     mutationFn: async () => {
       if (!reportQuery.data) return
-      await assignResponsible(reportQuery.data, userId, areaId)
+      await assignResponsible({
+        reportId: reportQuery.data.id,
+        reportTitle: reportQuery.data.title,
+        previousStatus: reportQuery.data.status,
+        userId,
+        areaId,
+      })
     },
     onSuccess: refreshReportDetail,
   })
 
   const evidenceMutation = useMutation({
-    mutationFn: (file: File) => uploadEvidence(reportId, file),
+    mutationFn: (file: File) => uploadEvidence({ reportId, file }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['evidences', reportId] }),
   })
 

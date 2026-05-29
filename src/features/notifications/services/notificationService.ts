@@ -3,7 +3,8 @@ import { assertNoError } from '../../../lib/insforgeErrors'
 import { statusLabels } from '../../../shared/utils/format'
 import type { ReportStatus } from '../../reports/types/report'
 import { NOTIFICATIONS_LIMIT } from '../constants/notificationOptions'
-import type { CreateNotificationPayload, PortalNotification } from '../types/notification'
+import { createNotificationDtoSchema, type CreateNotificationDto } from '../dtos/notificationDtos'
+import type { PortalNotification } from '../types/notification'
 
 export async function getNotifications() {
   const { data, error } = await insforge.database
@@ -26,10 +27,11 @@ export async function getUnreadNotificationsCount() {
   return data?.length ?? 0
 }
 
-export async function createNotification(payload: CreateNotificationPayload) {
+export async function createNotification(payload: CreateNotificationDto) {
+  const parsed = createNotificationDtoSchema.parse(payload)
   const { error } = await insforge.database.from('notifications').insert({
-    ...payload,
-    type: payload.type ?? 'INFO',
+    ...parsed,
+    type: parsed.type ?? 'INFO',
   })
 
   assertNoError(error)

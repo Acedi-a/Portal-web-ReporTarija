@@ -1,20 +1,19 @@
 import { insforge } from '../../../lib/insforge'
 import { assertNoError } from '../../../lib/insforgeErrors'
 import type { StaffUser } from '../../reports/types/report'
+import {
+  createStaffDtoSchema,
+  staffFormDtoSchema,
+  updateStaffDtoSchema,
+  type CreateStaffAccessDto,
+  type CreateStaffDto,
+  type StaffRoleDto,
+  type UpdateStaffDto,
+} from '../dtos/staffDtos'
 
-export type StaffRole = 'ADMIN' | 'FUNCIONARIO' | 'TECNICO' | 'RESPONSABLE_AREA'
-
-export type StaffPayload = {
-  full_name: string
-  email: string
-  role: StaffRole
-  area_id: string | null
-  is_active: boolean
-}
-
-export type StaffAccessPayload = StaffPayload & {
-  password: string
-}
+export type StaffRole = StaffRoleDto
+export type StaffPayload = UpdateStaffDto
+export type StaffAccessPayload = CreateStaffAccessDto
 
 const staffSelect = '*, areas:area_id(id,name,code)'
 
@@ -35,11 +34,12 @@ export async function getStaff() {
   return (data ?? []) as StaffUser[]
 }
 
-export async function createStaff(input: StaffPayload) {
+export async function createStaff(input: CreateStaffDto | UpdateStaffDto) {
+  const parsed = staffFormDtoSchema.omit({ password: true }).parse(input)
   const { data, error } = await insforge.database
     .from('users')
     .insert({
-      ...input,
+      ...parsed,
       phone: null,
     })
     .select(staffSelect)
@@ -49,8 +49,8 @@ export async function createStaff(input: StaffPayload) {
   return data as StaffUser
 }
 
-export async function createStaffAccess(input: StaffAccessPayload) {
-  const { password, ...profile } = input
+export async function createStaffAccess(input: CreateStaffAccessDto) {
+  const { password, ...profile } = createStaffDtoSchema.parse(input)
   const { error: signUpError } = await insforge.auth.signUp({
     email: profile.email,
     password,
@@ -61,11 +61,12 @@ export async function createStaffAccess(input: StaffAccessPayload) {
   return createStaff(profile)
 }
 
-export async function updateStaff(id: string, input: StaffPayload) {
+export async function updateStaff(id: string, input: UpdateStaffDto) {
+  const parsed = updateStaffDtoSchema.omit({ password: true }).parse(input)
   const { data, error } = await insforge.database
     .from('users')
     .update({
-      ...input,
+      ...parsed,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
