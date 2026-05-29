@@ -1,18 +1,13 @@
 import { Button } from '../../../shared/components/ui/Button'
 import { Panel } from '../../../shared/components/ui/Panel'
 import type { StaffUser } from '../../reports/types/report'
+import { staffRoleLabels } from '../constants/staffOptions'
+import { StaffStatusBadge } from './StaffStatusBadge'
 
 type StaffTableProps = {
   staff: StaffUser[]
   onEdit: (user: StaffUser) => void
   onToggleStatus: (user: StaffUser) => void
-}
-
-const accessLabels: Record<string, string> = {
-  ADMIN: 'Administrador',
-  FUNCIONARIO: 'Funcionario',
-  TECNICO: 'Funcionario',
-  RESPONSABLE_AREA: 'Funcionario',
 }
 
 export function StaffTable({ staff, onEdit, onToggleStatus }: StaffTableProps) {
@@ -34,12 +29,10 @@ export function StaffTable({ staff, onEdit, onToggleStatus }: StaffTableProps) {
             <tr key={user.id}>
               <td className="py-3 pr-4 font-medium text-slate-950 dark:text-zinc-50">{user.full_name}</td>
               <td className="py-3 pr-4 text-slate-600 dark:text-zinc-300">{user.email}</td>
-              <td className="py-3 pr-4 text-slate-600 dark:text-zinc-300">{accessLabels[user.role] ?? user.role}</td>
+              <td className="py-3 pr-4 text-slate-600 dark:text-zinc-300">{user.role === 'CITIZEN' ? user.role : staffRoleLabels[user.role]}</td>
               <td className="py-3 pr-4 text-slate-600 dark:text-zinc-300">{user.areas?.name ?? 'Todas'}</td>
               <td className="py-3 pr-4">
-                <span className={`rounded-full px-2 py-1 text-xs font-medium ${user.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'}`}>
-                  {user.is_active ? 'Activo' : 'Inactivo'}
-                </span>
+                <StaffStatusBadge isActive={user.is_active} />
               </td>
               <td className="py-3">
                 <div className="flex gap-2">

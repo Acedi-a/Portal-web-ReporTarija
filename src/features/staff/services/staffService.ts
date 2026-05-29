@@ -16,6 +16,8 @@ export type StaffAccessPayload = StaffPayload & {
   password: string
 }
 
+const staffSelect = '*, areas:area_id(id,name,code)'
+
 export async function getAreas() {
   const { data, error } = await insforge.database.from('areas').select('id,name,code').order('name')
   assertNoError(error)
@@ -25,7 +27,7 @@ export async function getAreas() {
 export async function getStaff() {
   const { data, error } = await insforge.database
     .from('users')
-    .select('*, areas:area_id(id,name,code)')
+    .select(staffSelect)
     .neq('role', 'CITIZEN')
     .order('full_name')
 
@@ -40,7 +42,7 @@ export async function createStaff(input: StaffPayload) {
       ...input,
       phone: null,
     })
-    .select('*, areas:area_id(id,name,code)')
+    .select(staffSelect)
     .single()
 
   assertNoError(error)
@@ -67,7 +69,7 @@ export async function updateStaff(id: string, input: StaffPayload) {
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-    .select('*, areas:area_id(id,name,code)')
+    .select(staffSelect)
     .single()
 
   assertNoError(error)
@@ -82,7 +84,7 @@ export async function toggleStaffStatus(user: StaffUser) {
       updated_at: new Date().toISOString(),
     })
     .eq('id', user.id)
-    .select('*, areas:area_id(id,name,code)')
+    .select(staffSelect)
     .single()
 
   assertNoError(error)

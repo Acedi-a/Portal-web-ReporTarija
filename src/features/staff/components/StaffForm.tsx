@@ -2,11 +2,8 @@ import { Button } from '../../../shared/components/ui/Button'
 import { SelectInput, TextInput } from '../../../shared/components/ui/FormControls'
 import { Panel } from '../../../shared/components/ui/Panel'
 import type { Area } from '../../reports/types/report'
-import type { StaffPayload, StaffRole } from '../services/staffService'
-
-export type StaffFormValue = StaffPayload & {
-  password: string
-}
+import { isStaffRole, staffRoleOptions } from '../constants/staffOptions'
+import type { StaffFormValue } from '../validations/staffSchema'
 
 type StaffFormProps = {
   value: StaffFormValue
@@ -19,11 +16,6 @@ type StaffFormProps = {
   onCancel?: () => void
 }
 
-const roles: Array<{ value: StaffRole; label: string }> = [
-  { value: 'ADMIN', label: 'Administrador' },
-  { value: 'FUNCIONARIO', label: 'Funcionario' },
-]
-
 export function StaffForm({
   value,
   areas,
@@ -34,6 +26,12 @@ export function StaffForm({
   onSubmit,
   onCancel,
 }: StaffFormProps) {
+  function handleRoleChange(role: string) {
+    if (isStaffRole(role)) {
+      onChange({ ...value, role })
+    }
+  }
+
   return (
     <Panel>
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
@@ -52,8 +50,8 @@ export function StaffForm({
             onChange={(event) => onChange({ ...value, password: event.target.value })}
           />
         ) : null}
-        <SelectInput label="Tipo de acceso" value={value.role} onChange={(event) => onChange({ ...value, role: event.target.value as StaffRole })}>
-            {roles.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}
+        <SelectInput label="Tipo de acceso" value={value.role} onChange={(event) => handleRoleChange(event.target.value)}>
+            {staffRoleOptions.map((role) => <option key={role.value} value={role.value}>{role.label}</option>)}
         </SelectInput>
         <SelectInput
           label="Área"
