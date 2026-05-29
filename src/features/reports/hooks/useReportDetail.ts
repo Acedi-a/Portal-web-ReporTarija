@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getAreas, getStaff } from '../../staff/services/staffService'
-import { getTrackingByReportId } from '../../tracking/services/trackingService'
+import { getTrackingByReportId } from '../tracking/services/trackingService'
 import { getEvidencesByReportId, uploadEvidence } from '../services/evidenceService'
 import { assignResponsible, getReportById, updateReportStatus } from '../services/reportService'
 import { validateAssignment, validateStatusChange } from '../utils/reportActions'

@@ -7,7 +7,7 @@ import { StatusSelector } from '../components/StatusSelector'
 import { ResponsibleSelector } from '../components/ResponsibleSelector'
 import { EvidenceViewer } from '../components/EvidenceViewer'
 import { ReportProgress } from '../components/ReportProgress'
-import { TrackingTimeline } from '../../tracking/components/TrackingTimeline'
+import { TrackingTimeline } from '../tracking/components/TrackingTimeline'
 import { Panel } from '../../../shared/components/ui/Panel'
 import { useReportDetail } from '../hooks/useReportDetail'
 

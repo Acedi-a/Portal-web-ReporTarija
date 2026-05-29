@@ -1,7 +1,7 @@
 import { insforge } from '../../../lib/insforge'
 import { assertNoError } from '../../../lib/insforgeErrors'
 import { createReportAssignedNotification, createReportUpdatedNotification } from '../../notifications/services/notificationService'
-import { createTrackingEntry } from '../../tracking/services/trackingService'
+import { createTrackingEntry } from '../tracking/services/trackingService'
 import type { Report, ReportStatus } from '../types/report'
 
 export type ReportFilters = {

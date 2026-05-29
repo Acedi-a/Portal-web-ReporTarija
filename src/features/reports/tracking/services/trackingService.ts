@@ -1,0 +1,35 @@
+import { insforge } from '../../../../lib/insforge'
+import { assertNoError } from '../../../../lib/insforgeErrors'
+import type { ReportStatus, TrackingEntry } from '../../types/report'
+
+const trackingSelect = '*, users:changed_by(id,full_name,email,role,is_active)'
+const defaultTrackingComment = 'Cambio de estado desde el portal municipal.'
+
+type CreateTrackingEntryInput = {
+  reportId: string
+  previousStatus: ReportStatus
+  newStatus: ReportStatus
+  comment?: string
+}
+
+export async function getTrackingByReportId(reportId: string) {
+  const { data, error } = await insforge.database
+    .from('tracking')
+    .select(trackingSelect)
+    .eq('report_id', reportId)
+    .order('created_at', { ascending: false })
+
+  assertNoError(error)
+  return (data ?? []) as TrackingEntry[]
+}
+
+export async function createTrackingEntry(input: CreateTrackingEntryInput) {
+  const { error } = await insforge.database.from('tracking').insert({
+    report_id: input.reportId,
+    previous_status: input.previousStatus,
+    new_status: input.newStatus,
+    comment: input.comment || defaultTrackingComment,
+  })
+
+  assertNoError(error)
+}
