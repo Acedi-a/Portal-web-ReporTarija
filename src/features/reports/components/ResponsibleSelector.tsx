@@ -26,6 +26,7 @@ export function ResponsibleSelector({
   return (
     <div className="grid gap-3">
       <SelectInput
+        label="Área municipal"
         value={areaId}
         onChange={(event) => onAreaChange(event.target.value)}
       >
@@ -33,6 +34,7 @@ export function ResponsibleSelector({
         {areas.map((area) => <option key={area.id} value={area.id}>{area.name}</option>)}
       </SelectInput>
       <SelectInput
+        label="Responsable"
         value={userId}
         onChange={(event) => onUserChange(event.target.value)}
       >

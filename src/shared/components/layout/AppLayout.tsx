@@ -1,8 +1,10 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Bell, ClipboardList, FileText, LayoutDashboard, LogOut, Moon, Sun, Users } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { useTheme } from '../../../app/theme'
 import { logout } from '../../../features/auth/services/authService'
 import { clearDemoSession } from '../../../features/auth/services/authSession'
+import { getUnreadNotificationsCount } from '../../../features/notifications/services/notificationService'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -14,6 +16,10 @@ const navItems = [
 export function AppLayout() {
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
+  const { data: unreadNotificationsCount = 0 } = useQuery({
+    queryKey: ['notifications-unread-count'],
+    queryFn: getUnreadNotificationsCount,
+  })
 
   async function handleLogout() {
     clearDemoSession()
@@ -49,7 +55,12 @@ export function AppLayout() {
               }
             >
               <item.icon className="h-4 w-4" />
-              {item.label}
+              <span className="min-w-0 flex-1">{item.label}</span>
+              {item.to === '/notifications' && unreadNotificationsCount > 0 ? (
+                <span className="ml-auto min-w-5 rounded-full bg-red-600 px-1.5 py-0.5 text-center text-[11px] font-semibold leading-4 text-white">
+                  {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                </span>
+              ) : null}
             </NavLink>
           ))}
         </nav>
@@ -75,8 +86,13 @@ export function AppLayout() {
         <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 px-4 py-2 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90 lg:hidden">
           <nav className="flex gap-2 overflow-x-auto">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-slate-600 dark:text-zinc-300">
+              <NavLink key={item.to} to={item.to} className="inline-flex items-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-slate-600 dark:text-zinc-300">
                 {item.label}
+                {item.to === '/notifications' && unreadNotificationsCount > 0 ? (
+                  <span className="min-w-5 rounded-full bg-red-600 px-1.5 py-0.5 text-center text-[11px] font-semibold leading-4 text-white">
+                    {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                  </span>
+                ) : null}
               </NavLink>
             ))}
           </nav>

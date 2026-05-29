@@ -16,6 +16,16 @@ export async function getNotifications() {
   return (data ?? []) as PortalNotification[]
 }
 
+export async function getUnreadNotificationsCount() {
+  const { data, error } = await insforge.database
+    .from('notifications')
+    .select('id')
+    .eq('is_read', false)
+
+  assertNoError(error)
+  return data?.length ?? 0
+}
+
 export async function createNotification(payload: CreateNotificationPayload) {
   const { error } = await insforge.database.from('notifications').insert({
     ...payload,
@@ -52,5 +62,10 @@ export async function createReportAssignedNotification(input: {
 
 export async function markNotificationAsRead(id: string) {
   const { error } = await insforge.database.from('notifications').update({ is_read: true }).eq('id', id)
+  assertNoError(error)
+}
+
+export async function markAllNotificationsAsRead() {
+  const { error } = await insforge.database.from('notifications').update({ is_read: true }).eq('is_read', false)
   assertNoError(error)
 }

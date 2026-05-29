@@ -25,6 +25,7 @@ export function StatusSelector({
   return (
     <div className="space-y-3">
       <SelectInput
+        label="Nuevo estado"
         value={value}
         onChange={(event) => onStatusChange(event.target.value as ReportStatus)}
       >
@@ -33,6 +34,7 @@ export function StatusSelector({
         ))}
       </SelectInput>
       <TextareaInput
+        label="Comentario interno"
         value={comment}
         onChange={(event) => onCommentChange(event.target.value)}
         placeholder="Comentario de seguimiento"
