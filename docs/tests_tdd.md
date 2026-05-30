@@ -1,6 +1,37 @@
-# Pruebas TDD aplicadas
+# Aplicacion de TDD
 
-Se incorporaron pruebas TDD sobre reglas de negocio y validaciones importantes del portal municipal ReportaTarija. Las pruebas se enfocan en lógica verificable sin depender de la interfaz visual ni de la conexión real con InsForge.
+Se aplico la metodologia **TDD (Test Driven Development)** sobre reglas de negocio y validaciones importantes del portal municipal ReportaTarija. TDD no es un tipo de prueba, sino una forma de desarrollo basada en escribir primero pruebas automatizadas que definen el comportamiento esperado.
+
+Como el proyecto ya contaba con una base funcional previa y una fase de refactorizacion, TDD se uso para consolidar funcionalidades criticas, documentar el comportamiento esperado y reducir el riesgo de regresiones futuras.
+
+La forma resumida de describir el trabajo es:
+
+```txt
+Se aplico TDD mediante 7 pruebas automatizadas con Vitest,
+agrupadas en 5 funcionalidades criticas del portal ReportaTarija.
+```
+
+## Ciclo Red, Green y Refactor aplicado
+
+### Fase Red
+
+Se definieron pruebas automatizadas que expresan reglas esperadas del sistema. Por ejemplo:
+
+- El login debe aceptar credenciales validas y rechazar credenciales invalidas.
+- Un reporte rechazado debe exigir comentario.
+- Una asignacion debe incluir responsable o area municipal.
+- El dashboard debe contar reportes por estado.
+- Un reporte resuelto no debe aparecer como vencido.
+
+Estas pruebas funcionan como especificacion viva del comportamiento esperado.
+
+### Fase Green
+
+Se ejecuto la suite con Vitest y se verifico que la logica existente cumpliera con esas reglas. Cuando una regla no estaba cubierta por pruebas, se agrego el caso correspondiente.
+
+### Fase Refactor
+
+Las pruebas se organizaron dentro de las features correspondientes, manteniendo la arquitectura modular del proyecto y evitando mezclar reglas de negocio con componentes visuales.
 
 ## Herramienta utilizada
 
@@ -20,6 +51,16 @@ src/features/reports/tests/reportBusinessRules.test.ts
 ```
 
 ## Tests implementados
+
+Los 7 tests pertenecen a 5 funcionalidades criticas:
+
+```txt
+1. Login
+2. Cambio de estado de reporte
+3. Asignacion de responsable o area
+4. Metricas del dashboard
+5. Reglas de vencimiento de reportes
+```
 
 | # | Test | Archivo | Que verifica |
 |---|---|---|---|
