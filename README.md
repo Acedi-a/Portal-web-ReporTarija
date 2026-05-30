@@ -1,191 +1,199 @@
-# Panel ReportaTarija
+<div align="center">
 
-Portal web municipal para la gestion y seguimiento de reportes ciudadanos en Tarija.
+# 🏛️ Panel ReportaTarija
 
-## Datos del proyecto
+**Portal web municipal para la gestión y seguimiento de reportes ciudadanos en Tarija.**
 
-- **Materia:** Ingenieria de Software 2
-- **Tema:** Soluciones para el sector publico y social
-- **Proyecto:** App de reporte ciudadano - Jimenez Daniel Gustavo
-- **Descripcion general:** Plataforma para reportar problemas urbanos como baches, alumbrado publico, basura acumulada o fugas de agua, con seguimiento desde el municipio.
-- **Repositorio actual:** Portal web municipal. La app movil ciudadana pertenece a otro repositorio.
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
 
-## Objetivo del sistema
+---
 
-ReportaTarija permite que funcionarios de la alcaldia o municipalidad revisen reportes ciudadanos, consulten su ubicacion, gestionen evidencias, asignen responsables, cambien estados y hagan seguimiento interno hasta su resolucion.
+**Materia:** Ingeniería de Software 2 &nbsp;·&nbsp; **Tema:** Soluciones para el sector público y social  
+**Autor:** Jiménez Daniel Gustavo
 
-El portal esta orientado al personal municipal, no al ciudadano final.
+</div>
 
-```md
+---
+
+## 📋 Descripción
+
+ReportaTarija es una plataforma municipal que permite a los **funcionarios de la alcaldía** gestionar y hacer seguimiento de reportes ciudadanos sobre problemas urbanos: baches, alumbrado público, basura acumulada, fugas de agua, entre otros.
+
+> ⚠️ Este repositorio corresponde al **portal web municipal**. La app móvil ciudadana pertenece a un repositorio separado.
+
+El portal está orientado exclusivamente al **personal municipal**, no al ciudadano final.
+
 ![Dashboard](docs/media/dashboard.png)
+
+---
+
+## ✨ Funcionalidades principales
+
+| Módulo | Descripción |
+|---|---|
+| 🔐 **Autenticación** | Inicio de sesión de funcionarios municipales |
+| 📊 **Dashboard** | Métricas generales y resumen operativo de reportes |
+| 📋 **Gestión de reportes** | Filtrado por estado, categoría y prioridad |
+| 🗺️ **Mapa y Kanban** | Vista geoespacial y tablero de seguimiento operativo |
+| 🔍 **Detalle de reporte** | Ubicación, evidencias e historial completo |
+| ✏️ **Acciones** | Cambio de estado y asignación de responsable o área |
+| 👥 **Accesos** | Gestión básica de permisos administrativos |
+| 🔔 **Notificaciones** | Sistema de notificaciones internas del portal |
+| 🤖 **Asistente IA** | Análisis para apoyar la revisión municipal de reportes |
+
+---
+
+## 🔄 Flujo principal
+
+```
+1. Inicio de sesión          →  Funcionario accede al portal
+2. Revisión del dashboard    →  Identifica el estado general de los reportes
+3. Gestión de reportes       →  Filtra, busca y revisa reportes pendientes
+4. Detalle del reporte       →  Consulta descripción, ubicación, evidencias e historial
+5. Acción municipal          →  Cambia el estado o asigna responsable/área
+6. Seguimiento               →  El sistema notifica y registra el avance internamente
 ```
 
-## Funcionalidades principales
+<p align="center">
+  <img src="docs/media/reportes.png" width="45%" />
+  <img src="docs/media/notificaciones.png" width="45%" />
+</p>
 
-- Inicio de sesion de funcionarios.
-- Dashboard con metricas generales de reportes.
-- Gestion de reportes ciudadanos por estado, categoria y prioridad.
-- Vista de mapa y tablero tipo kanban para seguimiento operativo.
-- Detalle de reporte con ubicacion, evidencias e historial.
-- Cambio de estado y asignacion de responsable o area municipal.
-- Gestion basica de accesos administrativos.
-- Notificaciones internas del portal.
-- Asistente de analisis para apoyar la revision municipal de reportes.
+---
 
-```md
-![Reportes](docs/media/reportes.png)
-![Notificaciones](docs/media/notificaciones.png)
+## 🛠️ Stack tecnológico
+
+### Frontend
+
+| Tecnología | Uso |
+|---|---|
+| React + Vite + TypeScript | Base del proyecto |
+| Tailwind CSS + Radix UI + shadcn | Estilos y componentes UI |
+| React Router | Navegación y rutas |
+| TanStack Query | Estado del servidor y caché |
+| React Hook Form + Zod | Formularios y validación |
+| Recharts | Gráficos y métricas |
+| MapLibre GL | Visualización de mapas |
+
+### Backend / Infraestructura
+
+| Tecnología | Uso |
+|---|---|
+| InsForge (BaaS) | Autenticación, base de datos, storage y funciones |
+| Vitest | Pruebas unitarias |
+| Playwright | Pruebas end-to-end |
+| pnpm | Gestión de paquetes |
+
+---
+
+## 🏗️ Arquitectura
+
+El proyecto utiliza una **arquitectura modular basada en features**. Cada módulo encapsula sus propios componentes, hooks, servicios, DTOs, validaciones, tipos y pruebas.
+
 ```
-
-### Flujo principal del portal
-
-El flujo esperado de uso es:
-
-1. El funcionario inicia sesion en el portal.
-2. Revisa el dashboard para identificar el estado general de los reportes.
-3. Entra a la gestion de reportes para filtrar, buscar o revisar reportes pendientes.
-4. Abre el detalle de un reporte para ver descripcion, ubicacion, evidencias e historial.
-5. Cambia el estado del reporte o asigna un responsable/area municipal.
-6. El sistema mantiene el seguimiento mediante tracking y notificaciones internas.
-
-## Stack de desarrollo
-
-- **Frontend:** React, Vite, TypeScript.
-- **Estilos:** Tailwind CSS, Radix UI, shadcn, Lucide React.
-- **Rutas:** React Router.
-- **Estado servidor/cache:** TanStack Query.
-- **Formularios y validacion:** React Hook Form y Zod.
-- **Graficos:** Recharts.
-- **Mapas:** MapLibre GL.
-- **Backend/BaaS:** InsForge para autenticacion, base de datos, storage y funciones.
-- **Testing:** Vitest y Playwright.
-- **Gestor de paquetes:** pnpm.
-
-## Arquitectura
-
-El proyecto usa una arquitectura modular basada en **features**. Cada modulo agrupa sus propios componentes, hooks, servicios, DTOs, validaciones, tipos y pruebas cuando corresponde.
-
-```txt
 src/
-  app/                 Configuracion general, rutas y providers
-  features/
-    auth/              Login, sesion y proteccion de rutas
-    dashboard/         Metricas y resumen operativo
-    reports/           Gestion, detalle, filtros, mapa, acciones y tracking
-    staff/             Gestion de funcionarios/accesos
-    notifications/     Notificaciones internas
-  shared/              Componentes, layout y utilidades reutilizables
-  lib/                 Clientes compartidos como InsForge y TanStack Query
+├── app/                  # Configuración general, rutas y providers
+├── features/
+│   ├── auth/             # Login, sesión y protección de rutas
+│   ├── dashboard/        # Métricas y resumen operativo
+│   ├── reports/          # Gestión, detalle, filtros, mapa, acciones y tracking
+│   ├── staff/            # Gestión de funcionarios y accesos
+│   └── notifications/    # Notificaciones internas
+├── shared/               # Componentes, layout y utilidades reutilizables
+└── lib/                  # Clientes compartidos (InsForge, TanStack Query)
 ```
 
-Esta organizacion ayuda a mantener independencia entre modulos, separacion de responsabilidades y componentes mas faciles de probar y mantener.
+Esta organización favorece la **independencia entre módulos**, la separación de responsabilidades y facilita las pruebas.
 
-## Patrones aplicados
+---
 
-- **Repository:** servicios por feature encapsulan el acceso a InsForge.
-- **Facade:** hooks personalizados simplifican el uso de servicios, queries, mutations y formularios.
-- **Singleton:** cliente de InsForge y QueryClient centralizados.
-- **DTO:** objetos de transferencia para login, acciones de reportes, funcionarios y notificaciones.
-- **Adapter:** servicio de analisis IA adapta llamadas externas a una interfaz propia del dominio.
-- **Observer:** TanStack Query actualiza vistas cuando cambian reportes, notificaciones o datos relacionados.
+## 🧩 Patrones de diseño aplicados
 
-Mas detalle en `docs/patrones_diseño.md`.
+| Patrón | Implementación |
+|---|---|
+| **Repository** | Servicios por feature encapsulan el acceso a InsForge |
+| **Facade** | Hooks personalizados simplifican el uso de servicios, queries y mutations |
+| **Singleton** | Cliente InsForge y QueryClient centralizados |
+| **DTO** | Objetos de transferencia para login, acciones, funcionarios y notificaciones |
+| **Adapter** | Servicio de análisis IA adapta llamadas externas a una interfaz del dominio |
+| **Observer** | TanStack Query actualiza vistas ante cambios en reportes y notificaciones |
 
-## Calidad y refactorizacion
+> 📄 Más detalle en [`docs/patrones_diseño.md`](docs/patrones_diseño.md)
 
-Antes de la fase de pruebas se corrigieron bad smells y se refactorizaron modulos principales:
+---
 
-- Separacion de logica de negocio fuera de componentes visuales.
-- Extraccion de hooks para reducir responsabilidades en paginas.
-- Validaciones con Zod para evitar validacion primitiva dispersa.
-- Constantes para evitar magic numbers y strings repetidos.
-- Componentes reutilizables para estados, badges, tablas, filtros y formularios.
+## 🧹 Calidad y refactorización
 
-Mas detalle en `docs/Refactor_Badsmells_fix.md`.
+Antes de la fase de pruebas se corrigieron *bad smells* y se refactorizaron los módulos principales:
 
-## Pruebas y TDD
+- Separación de lógica de negocio fuera de los componentes visuales
+- Extracción de hooks para reducir responsabilidades en páginas
+- Validaciones con Zod para eliminar validación primitiva dispersa
+- Uso de constantes para evitar *magic numbers* y strings repetidos
+- Componentes reutilizables para estados, badges, tablas, filtros y formularios
 
-Se aplico TDD como metodologia de desarrollo incremental usando el ciclo **Red, Green, Refactor**:
+> 📄 Más detalle en [`docs/Refactor_Badsmells_fix.md`](docs/Refactor_Badsmells_fix.md)
 
-1. Se definio primero el comportamiento esperado mediante pruebas automatizadas.
-2. Se implemento el codigo minimo para pasar la prueba.
-3. Se refactorizo manteniendo el comportamiento validado.
+---
 
-Pruebas automatizadas implementadas:
+## 🧪 Pruebas y TDD
 
-- Validacion de login con credenciales validas e invalidas.
-- Validacion de reglas para rechazar reportes con comentario obligatorio.
-- Validacion de asignacion con responsable o area municipal.
-- Calculo de metricas del dashboard por estado.
-- Regla de reporte vencido despues de 15 dias sin atencion.
-- Prueba de humo del flujo principal del portal con Playwright.
+Se aplicó **TDD** como metodología de desarrollo incremental siguiendo el ciclo **Red → Green → Refactor**:
 
-Archivos principales:
+1. Se define el comportamiento esperado mediante pruebas automatizadas
+2. Se implementa el código mínimo para pasar la prueba
+3. Se refactoriza manteniendo el comportamiento validado
 
-```txt
+### Pruebas implementadas
+
+- ✅ Validación de login con credenciales válidas e inválidas
+- ✅ Rechazo de reportes con comentario obligatorio
+- ✅ Asignación de responsable o área municipal
+- ✅ Cálculo de métricas del dashboard por estado
+- ✅ Regla de reporte vencido después de 15 días sin atención
+- ✅ Prueba de humo del flujo principal con Playwright
+
+### Archivos de pruebas
+
+```
 src/features/auth/tests/loginDto.test.ts
 src/features/reports/tests/reportActionDtos.test.ts
 src/features/reports/tests/reportBusinessRules.test.ts
 tests/smoke/portal.smoke.spec.ts
 ```
 
-Documentacion relacionada:
+![Tests TDD](docs/media/tests.png)
 
-```txt
-docs/tests_tdd.md
-docs/prueba_humo.md
-```
+> 📄 Documentación: [`docs/tests_tdd.md`](docs/tests_tdd.md) · [`docs/prueba_humo.md`](docs/prueba_humo.md)
 
-```md
-![TestsTDD](docs/media/tests.png)
-```
+---
 
-## Prueba de humo
+## 💨 Prueba de humo
 
-La prueba de humo es una prueba por objetivo. Verifica rapidamente que el sistema arranca, permite iniciar sesion y que las pantallas principales responden:
+Verifica rápidamente que el sistema arranca, permite iniciar sesión y que las pantallas principales responden correctamente.
 
-- Login.
-- Dashboard.
-- Reportes.
-- Accesos administrativos.
-- Notificaciones.
-
-Comando:
+**Pantallas cubiertas:** Login · Dashboard · Reportes · Accesos administrativos · Notificaciones
 
 ```bash
+# Ejecutar en modo headless
 pnpm test:smoke
-```
 
-Para verla navegando en el navegador:
-
-```bash
+# Ejecutar con navegador visible
 pnpm exec playwright test tests/smoke --headed
 ```
 
-```md
-![Test_playwright](docs/media/test_playwright.png)
-```
+![Prueba de humo](docs/media/test_playwright.gif)
+---
 
-## Comandos principales
+## ⚙️ Configuración del entorno
 
-```bash
-pnpm install
-pnpm dev
-pnpm build
-pnpm lint
-pnpm test
-pnpm test:smoke
-```
+La conexión con InsForge está centralizada en `src/lib/insforge.ts`.
 
-## Configuracion de entorno
-
-La conexion con InsForge esta centralizada en:
-
-```txt
-src/lib/insforge.ts
-```
-
-Variables esperadas:
+Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
 ```env
 VITE_INSFORGE_URL=https://uri.insforge.com
@@ -194,9 +202,40 @@ VITE_SMOKE_ADMIN_EMAIL=admin@reportatarija.bo
 VITE_SMOKE_ADMIN_PASSWORD=tu_password
 ```
 
-El esquema y datos demo estan versionados en:
+El esquema y los datos de demostración están versionados en:
 
-```txt
+```
 database/insforge-schema-seed.sql
 ```
 
+---
+
+## 🚀 Comandos
+
+```bash
+# Instalar dependencias
+pnpm install
+
+# Servidor de desarrollo
+pnpm dev
+
+# Build de producción
+pnpm build
+
+# Linter
+pnpm lint
+
+# Ejecutar pruebas unitarias
+pnpm test
+
+# Ejecutar prueba de humo
+pnpm test:smoke
+```
+
+---
+
+<div align="center">
+
+Desarrollado con ❤️ para la Alcaldía de Tarija &nbsp;·&nbsp; Ingeniería de Software 2
+
+</div>
